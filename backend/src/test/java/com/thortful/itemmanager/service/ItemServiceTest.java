@@ -1,6 +1,6 @@
 package com.thortful.itemmanager.service;
 
-import com.thortful.itemmanager.exception.ItemNotFoundException;
+import org.springframework.web.server.ResponseStatusException;
 import com.thortful.itemmanager.model.Item;
 import com.thortful.itemmanager.repository.ItemRepository;
 import org.junit.jupiter.api.DisplayName;
@@ -168,13 +168,13 @@ class ItemServiceTest {
     }
 
     @Test
-    @DisplayName("deleteById throws ItemNotFoundException when the item does not exist")
-    void deleteById_shouldThrowItemNotFoundExceptionWhenItemDoesNotExist() {
+    @DisplayName("deleteById throws ResponseStatusException when the item does not exist")
+    void deleteById_shouldThrowResponseStatusExceptionWhenItemDoesNotExist() {
         Long nonExistentId = 999L;
         when(itemRepository.existsById(nonExistentId)).thenReturn(false);
 
         assertThatThrownBy(() -> itemService.deleteById(nonExistentId))
-                .isInstanceOf(ItemNotFoundException.class)
+                .isInstanceOf(ResponseStatusException.class)
                 .hasMessageContaining(String.valueOf(nonExistentId));
     }
 
@@ -185,7 +185,7 @@ class ItemServiceTest {
         when(itemRepository.existsById(nonExistentId)).thenReturn(false);
 
         assertThatThrownBy(() -> itemService.deleteById(nonExistentId))
-                .isInstanceOf(ItemNotFoundException.class);
+                .isInstanceOf(ResponseStatusException.class);
 
         verify(itemRepository, never()).deleteById(any());
     }
