@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 import com.thortful.itemmanager.model.Item;
 import com.thortful.itemmanager.service.ItemService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -35,25 +36,37 @@ class ItemControllerTest {
     @MockitoBean
     private ItemService itemService;
 
-    private ObjectMapper objectMapper = new ObjectMapper();
+    private ObjectMapper objectMapper;
+    private Item item1;
+    private Item item2;
+
+    @BeforeEach
+    void setUp() {
+        objectMapper = new ObjectMapper();
+        
+        item1 = new Item("Apple");
+        item1.setId(1L);
+        
+        item2 = new Item("Banana");
+        item2.setId(2L);
+    }
 
     @Test
     @DisplayName("GET /api/items should return a paginated list of items")
     void getItems_shouldReturnPaginatedItems() throws Exception {
-        Item item1 = new Item("Apple");
-        item1.setId(1L);
-        Item item2 = new Item("Banana");
-        item2.setId(2L);
+        // Given
         Page<Item> page = new PageImpl<>(List.of(item1, item2));
-
         Mockito.when(itemService.searchByName(eq("app"), any())).thenReturn(page);
 
-        mockMvc.perform(get("/api/items")
+        // When
+        var response = mockMvc.perform(get("/api/items")
                 .param("search", "app")
                 .param("page", "0")
                 .param("size", "20")
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
+                .contentType(MediaType.APPLICATION_JSON));
+
+        // Then
+        response.andExpect(status().isOk())
                 .andExpect(jsonPath("$.content", hasSize(2)))
                 .andExpect(jsonPath("$.content[0].name", is("Apple")))
                 .andExpect(jsonPath("$.content[1].name", is("Banana")));
@@ -62,16 +75,19 @@ class ItemControllerTest {
     @Test
     @DisplayName("POST /api/items should create an item and return 201 Created")
     void createItem_shouldCreateAndReturnItem() throws Exception {
+        // Given
         Item inputItem = new Item("Orange");
         Item savedItem = new Item("Orange");
         savedItem.setId(10L);
-
         Mockito.when(itemService.save(any(Item.class))).thenReturn(savedItem);
 
-        mockMvc.perform(post("/api/items")
+        // When
+        var response = mockMvc.perform(post("/api/items")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(inputItem)))
-                .andExpect(status().isCreated())
+                .content(objectMapper.writeValueAsString(inputItem)));
+
+        // Then
+        response.andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id", is(10)))
                 .andExpect(jsonPath("$.name", is("Orange")));
     }
@@ -79,20 +95,29 @@ class ItemControllerTest {
     @Test
     @DisplayName("DELETE /api/items/{id} should delete item and return 204 No Content")
     void deleteItem_shouldReturn204() throws Exception {
-        Mockito.doNothing().when(itemService).deleteById(1L);
+        // Given
+        Long idToDelete = 1L;
+        Mockito.doNothing().when(itemService).deleteById(idToDelete);
 
-        mockMvc.perform(delete("/api/items/{id}", 1L))
-                .andExpect(status().isNoContent());
+        // When
+        var response = mockMvc.perform(delete("/api/items/{id}", idToDelete));
 
-        Mockito.verify(itemService, Mockito.times(1)).deleteById(1L);
+        // Then
+        response.andExpect(status().isNoContent());
+        Mockito.verify(itemService, Mockito.times(1)).deleteById(idToDelete);
     }
 
     @Test
     @DisplayName("DELETE /api/items/{id} should return 404 when item does not exist")
     void deleteItem_shouldReturn404WhenItemNotFound() throws Exception {
-        Mockito.doThrow(new ResponseStatusException(HttpStatus.NOT_FOUND)).when(itemService).deleteById(99L);
+        // Given
+        Long idToDelete = 99L;
+        Mockito.doThrow(new ResponseStatusException(HttpStatus.NOT_FOUND)).when(itemService).deleteById(idToDelete);
 
-        mockMvc.perform(delete("/api/items/{id}", 99L))
-                .andExpect(status().isNotFound());
+        // When
+        var response = mockMvc.perform(delete("/api/items/{id}", idToDelete));
+
+        // Then
+        response.andExpect(status().isNotFound());
     }
 }

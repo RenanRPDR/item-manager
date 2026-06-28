@@ -3,6 +3,7 @@ package com.thortful.itemmanager.service;
 import org.springframework.web.server.ResponseStatusException;
 import com.thortful.itemmanager.model.Item;
 import com.thortful.itemmanager.repository.ItemRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -18,6 +19,8 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -30,6 +33,18 @@ class ItemServiceTest {
     @InjectMocks
     private ItemService itemService;
 
+    private Item item1;
+    private Item item2;
+
+    @BeforeEach
+    void setUp() {
+        item1 = new Item("Granite");
+        item1.setId(1L);
+
+        item2 = new Item("Marble");
+        item2.setId(2L);
+    }
+
     // -------------------------------------------------------------------------
     // findAll cases
     // -------------------------------------------------------------------------
@@ -37,11 +52,14 @@ class ItemServiceTest {
     @Test
     @DisplayName("findAll returns the full list from the repository")
     void findAll_shouldReturnAllItems() {
-        List<Item> items = List.of(new Item("Granite"), new Item("Marble"));
+        // Given
+        List<Item> items = List.of(item1, item2);
         when(itemRepository.findAll()).thenReturn(items);
 
+        // When
         List<Item> result = itemService.findAll();
 
+        // Then
         assertThat(result).hasSize(2).containsExactlyElementsOf(items);
         verify(itemRepository).findAll();
     }
@@ -49,10 +67,13 @@ class ItemServiceTest {
     @Test
     @DisplayName("findAll returns an empty list when the repository is empty")
     void findAll_shouldReturnEmptyListWhenNoItems() {
+        // Given
         when(itemRepository.findAll()).thenReturn(List.of());
 
+        // When
         List<Item> result = itemService.findAll();
 
+        // Then
         assertThat(result).isEmpty();
         verify(itemRepository).findAll();
     }
@@ -64,15 +85,18 @@ class ItemServiceTest {
     @Test
     @DisplayName("searchByName forwards the fragment and pageable to the repository")
     void searchByName_shouldForwardFragmentAndPageableToRepository() {
+        // Given
         String fragment = "stone";
         Pageable pageable = PageRequest.of(0, 10);
-        Page<Item> expectedPage = new PageImpl<>(List.of(new Item("Granite Stone")));
+        Page<Item> expectedPage = new PageImpl<>(List.of(item1));
 
         when(itemRepository.findByNameContainingIgnoreCase(fragment, pageable))
                 .thenReturn(expectedPage);
 
+        // When
         Page<Item> result = itemService.searchByName(fragment, pageable);
 
+        // Then
         assertThat(result).isEqualTo(expectedPage);
         verify(itemRepository).findByNameContainingIgnoreCase(fragment, pageable);
     }
@@ -80,6 +104,7 @@ class ItemServiceTest {
     @Test
     @DisplayName("searchByName returns an empty page when no items match the fragment")
     void searchByName_shouldReturnEmptyPageWhenNoMatch() {
+        // Given
         String fragment = "zzz";
         Pageable pageable = PageRequest.of(0, 10);
         Page<Item> emptyPage = Page.empty(pageable);
@@ -87,8 +112,10 @@ class ItemServiceTest {
         when(itemRepository.findByNameContainingIgnoreCase(fragment, pageable))
                 .thenReturn(emptyPage);
 
+        // When
         Page<Item> result = itemService.searchByName(fragment, pageable);
 
+        // Then
         assertThat(result.getContent()).isEmpty();
         assertThat(result.getTotalElements()).isZero();
     }
@@ -96,14 +123,17 @@ class ItemServiceTest {
     @Test
     @DisplayName("searchByName uses the correct page number and page size")
     void searchByName_shouldUseCorrectPaginationParameters() {
+        // Given
         Pageable pageable = PageRequest.of(2, 5);
         Page<Item> page = new PageImpl<>(List.of(), pageable, 0);
 
         when(itemRepository.findByNameContainingIgnoreCase("rock", pageable))
                 .thenReturn(page);
 
+        // When
         itemService.searchByName("rock", pageable);
 
+        // Then
         verify(itemRepository).findByNameContainingIgnoreCase(
                 argThat(f -> f.equals("rock")),
                 argThat(p -> p.getPageNumber() == 2 && p.getPageSize() == 5));
@@ -116,28 +146,30 @@ class ItemServiceTest {
     @Test
     @DisplayName("save persists the item and returns the saved entity")
     void save_shouldPersistItemAndReturnSavedEntity() {
+        // Given
         Item input = new Item("Amber");
-        Item saved = new Item("Amber");
-        saved.setId(1L);
+        when(itemRepository.save(input)).thenReturn(item1); // mock returning item1 as saved
 
-        when(itemRepository.save(input)).thenReturn(saved);
-
+        // When
         Item result = itemService.save(input);
 
+        // Then
         assertThat(result.getId()).isEqualTo(1L);
-        assertThat(result.getName()).isEqualTo("Amber");
+        assertThat(result.getName()).isEqualTo("Granite"); // item1's name
         verify(itemRepository).save(input);
     }
 
     @Test
     @DisplayName("save delegates to the repository exactly once")
     void save_shouldCallRepositorySaveOnce() {
-        Item item = new Item("Obsidian");
-        when(itemRepository.save(item)).thenReturn(item);
+        // Given
+        when(itemRepository.save(item1)).thenReturn(item1);
 
-        itemService.save(item);
+        // When
+        itemService.save(item1);
 
-        verify(itemRepository, times(1)).save(item);
+        // Then
+        verify(itemRepository, times(1)).save(item1);
     }
 
     // -------------------------------------------------------------------------
@@ -147,11 +179,14 @@ class ItemServiceTest {
     @Test
     @DisplayName("deleteById removes the item when it exists")
     void deleteById_shouldDeleteItemWhenItExists() {
+        // Given
         Long id = 1L;
         when(itemRepository.existsById(id)).thenReturn(true);
 
+        // When
         itemService.deleteById(id);
 
+        // Then
         verify(itemRepository).existsById(id);
         verify(itemRepository).deleteById(id);
     }
@@ -159,20 +194,25 @@ class ItemServiceTest {
     @Test
     @DisplayName("deleteById calls deleteById on the repository exactly once")
     void deleteById_shouldCallRepositoryDeleteByIdOnce() {
+        // Given
         Long id = 5L;
         when(itemRepository.existsById(id)).thenReturn(true);
 
+        // When
         itemService.deleteById(id);
 
+        // Then
         verify(itemRepository, times(1)).deleteById(id);
     }
 
     @Test
     @DisplayName("deleteById throws ResponseStatusException when the item does not exist")
     void deleteById_shouldThrowResponseStatusExceptionWhenItemDoesNotExist() {
+        // Given
         Long nonExistentId = 999L;
         when(itemRepository.existsById(nonExistentId)).thenReturn(false);
 
+        // When & Then
         assertThatThrownBy(() -> itemService.deleteById(nonExistentId))
                 .isInstanceOf(ResponseStatusException.class)
                 .hasMessageContaining(String.valueOf(nonExistentId));
@@ -181,9 +221,11 @@ class ItemServiceTest {
     @Test
     @DisplayName("deleteById never calls repository delete when the item does not exist")
     void deleteById_shouldNeverCallDeleteWhenItemDoesNotExist() {
+        // Given
         Long nonExistentId = 999L;
         when(itemRepository.existsById(nonExistentId)).thenReturn(false);
 
+        // When & Then
         assertThatThrownBy(() -> itemService.deleteById(nonExistentId))
                 .isInstanceOf(ResponseStatusException.class);
 
