@@ -30,13 +30,6 @@ public class ItemService {
         return itemRepository.save(item);
     }
 
-    public List<Item> saveAll(List<String> names) {
-        List<Item> items = names.stream()
-                .map(Item::new)
-                .toList();
-        return itemRepository.saveAll(items);
-    }
-
     public void deleteById(Long id) {
         if (!itemRepository.existsById(id)) {
             throw new ItemNotFoundException(id);

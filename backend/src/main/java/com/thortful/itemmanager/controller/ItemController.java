@@ -14,10 +14,9 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/api/items")
+@CrossOrigin(origins = "http://localhost:4200")
 @Tag(name = "Items", description = "Item Management API")
 public class ItemController {
 
@@ -48,19 +47,12 @@ public class ItemController {
         return ResponseEntity.status(HttpStatus.CREATED).body(saved);
     }
 
-    @Operation(summary = "Create multiple items", description = "Receives an array of string names and saves many new items at the same time.")
-    @ApiResponse(responseCode = "201", description = "Items successfully created")
-    @PostMapping("/bulk")
-    public ResponseEntity<List<Item>> createItems(@RequestBody List<String> names) {
-        List<Item> saved = itemService.saveAll(names);
-        return ResponseEntity.status(HttpStatus.CREATED).body(saved);
-    }
-
     @Operation(summary = "Delete an item", description = "Removes the item with the given ID and returns HTTP 204 No Content.")
     @ApiResponse(responseCode = "204", description = "Item successfully deleted")
     @ApiResponse(responseCode = "404", description = "Item not found")
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteItem(@Parameter(description = "ID of the item to be deleted") @PathVariable Long id) {
+    public ResponseEntity<Void> deleteItem(
+            @Parameter(description = "ID of the item to be deleted") @PathVariable Long id) {
         itemService.deleteById(id);
         return ResponseEntity.noContent().build();
     }

@@ -141,29 +141,6 @@ class ItemServiceTest {
     }
 
     // -------------------------------------------------------------------------
-    // saveAll cases
-    // -------------------------------------------------------------------------
-
-    @Test
-    @DisplayName("saveAll maps strings to Items and saves them via repository")
-    void saveAll_shouldMapStringsToItemsAndSave() {
-        List<String> names = List.of("Diamond", "Ruby");
-        List<Item> savedItems = List.of(new Item("Diamond"), new Item("Ruby"));
-
-        when(itemRepository.saveAll(anyIterable())).thenReturn(savedItems);
-
-        List<Item> result = itemService.saveAll(names);
-
-        assertThat(result).isEqualTo(savedItems);
-        verify(itemRepository).saveAll(argThat(items -> {
-            List<Item> list = (List<Item>) items;
-            return list.size() == 2 &&
-                    "Diamond".equals(list.get(0).getName()) &&
-                    "Ruby".equals(list.get(1).getName());
-        }));
-    }
-
-    // -------------------------------------------------------------------------
     // deleteById cases
     // -------------------------------------------------------------------------
 
