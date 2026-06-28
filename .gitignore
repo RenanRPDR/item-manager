@@ -1,16 +1,47 @@
-# Compiled class file
-*.class
+# ==========================================
+# Unified .gitignore for Spring Boot + Angular
+# ==========================================
 
-# Log file
+# ------------------------------------------
+# General
+# ------------------------------------------
 *.log
+*.class
+.DS_Store
+Thumbs.db
 
-# BlueJ files
-*.ctxt
+# ------------------------------------------
+# IDEs and Editors
+# ------------------------------------------
+.idea/
+*.iws
+*.iml
+*.ipr
 
-# Mobile Tools for Java (J2ME)
-.mtj.tmp/
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+!.vscode/mcp.json
 
-# Package Files #
+.project
+.classpath
+.settings/
+.factorypath
+.springBeans
+.sts4-cache
+.apt_generated
+
+*.sublime-workspace
+.c9/
+*.launch
+.history/*
+
+# ------------------------------------------
+# Backend (Spring Boot / Maven / Java)
+# ------------------------------------------
+backend/target/
 *.jar
 *.war
 *.nar
@@ -19,6 +50,42 @@
 *.tar.gz
 *.rar
 
-# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
+.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+# JVM Crash Logs
 hs_err_pid*
 replay_pid*
+
+# Mobile Tools for Java (J2ME)
+.mtj.tmp/
+
+# NetBeans
+nbproject/private/
+nbbuild/
+nbdist/
+.nb-gradle/
+
+# ------------------------------------------
+# Frontend (Angular / Node)
+# ------------------------------------------
+frontend/node_modules/
+frontend/dist/
+frontend/tmp/
+frontend/out-tsc/
+frontend/bazel-out/
+frontend/.angular/
+frontend/coverage/
+frontend/__screenshots__/
+
+# Node logs
+npm-debug.log
+yarn-error.log
+
+# Miscellaneous Node/Angular
+.sass-cache/
+connect.lock
+libpeerconnection.log
+testem.log
+frontend/typings/
