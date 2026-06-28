@@ -1,6 +1,7 @@
 package com.thortful.itemmanager.service;
 
-import com.thortful.itemmanager.exception.ItemNotFoundException;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 import com.thortful.itemmanager.model.Item;
 import com.thortful.itemmanager.repository.ItemRepository;
 import org.springframework.data.domain.Page;
@@ -32,7 +33,7 @@ public class ItemService {
 
     public void deleteById(Long id) {
         if (!itemRepository.existsById(id)) {
-            throw new ItemNotFoundException(id);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Item not found with id: " + id);
         }
         itemRepository.deleteById(id);
     }
