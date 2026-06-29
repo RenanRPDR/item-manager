@@ -4,6 +4,7 @@ import com.thortful.itemmanager.model.Item;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import com.thortful.itemmanager.config.DataLoader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
 import org.springframework.data.domain.Page;
@@ -49,7 +50,7 @@ class ItemRepositoryTest {
     @Test
     @DisplayName("Returns items whose name contains the given fragment")
     void shouldReturnItemsContainingFragment() {
-        // Given (setup is in BeforeEach)
+        // Given (from setup)
 
         // When
         Page<Item> result = itemRepository.findByNameContainingIgnoreCase("Marble", defaultPageable);
@@ -66,7 +67,7 @@ class ItemRepositoryTest {
     @Test
     @DisplayName("Matches regardless of the fragment being uppercase")
     void shouldMatchWhenFragmentIsUpperCase() {
-        // Given
+        // Given (from setup)
 
         // When
         Page<Item> result = itemRepository.findByNameContainingIgnoreCase("AMBER", defaultPageable);
@@ -79,7 +80,7 @@ class ItemRepositoryTest {
     @Test
     @DisplayName("Matches regardless of the fragment being lowercase")
     void shouldMatchWhenFragmentIsLowerCase() {
-        // Given
+        // Given (from setup)
 
         // When
         Page<Item> result = itemRepository.findByNameContainingIgnoreCase("basalt", defaultPageable);
@@ -92,7 +93,7 @@ class ItemRepositoryTest {
     @Test
     @DisplayName("Matches items stored in uppercase when fragment is lowercase")
     void shouldMatchUpperCaseStoredNameWithLowerCaseFragment() {
-        // Given
+        // Given (from setup)
 
         // When
         Page<Item> result = itemRepository.findByNameContainingIgnoreCase("stone tower", defaultPageable);
@@ -109,7 +110,7 @@ class ItemRepositoryTest {
     @Test
     @DisplayName("Returns all items whose name contains a shared fragment")
     void shouldReturnMultipleItemsForSharedFragment() {
-        // Given
+        // Given (from setup)
 
         // When
         Page<Item> result = itemRepository.findByNameContainingIgnoreCase("stone", defaultPageable);
@@ -127,7 +128,7 @@ class ItemRepositoryTest {
     @Test
     @DisplayName("Returns an empty page when no item matches the fragment")
     void shouldReturnEmptyPageWhenNoMatchFound() {
-        // Given
+        // Given (from setup)
 
         // When
         Page<Item> result = itemRepository.findByNameContainingIgnoreCase("Diamond", defaultPageable);
@@ -235,5 +236,24 @@ class ItemRepositoryTest {
         // Then
         assertThat(result.getContent()).hasSize(1);
         assertThat(result.getContent().get(0).getName()).isEqualTo("Amber Crystal");
+    }
+
+    // -------------------------------------------------------------------------
+    // Bulk Insert (1000+ items)
+    // -------------------------------------------------------------------------
+
+    @Test
+    @DisplayName("Should successfully load and verify 1000+ items using DataLoader")
+    void shouldHandleMoreThan1000Items() throws Exception {
+        // Given
+        itemRepository.deleteAll();
+        DataLoader dataLoader = new DataLoader();
+
+        // When
+        dataLoader.seedDatabase(itemRepository).run();
+
+        // Then
+        long count = itemRepository.count();
+        assertThat(count).isGreaterThanOrEqualTo(1000L);
     }
 }

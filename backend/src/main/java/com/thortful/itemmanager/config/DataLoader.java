@@ -19,7 +19,7 @@ public class DataLoader {
     private static final Logger log = LoggerFactory.getLogger(DataLoader.class);
 
     @Bean
-    CommandLineRunner seedDatabase(ItemRepository itemRepository) {
+    public CommandLineRunner seedDatabase(ItemRepository itemRepository) {
         return args -> {
             if (itemRepository.count() > 0) {
                 log.info("Database already seeded with {} items. Skipping.", itemRepository.count());
