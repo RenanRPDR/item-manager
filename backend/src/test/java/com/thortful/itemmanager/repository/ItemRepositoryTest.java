@@ -229,8 +229,6 @@ class ItemRepositoryTest {
     @Test
     @DisplayName("Matches when the fragment is identical to the full item name")
     void shouldMatchWhenFragmentEqualsFullName() {
-        // Given
-
         // When
         Page<Item> result = itemRepository.findByNameContainingIgnoreCase("Amber Crystal", defaultPageable);
 

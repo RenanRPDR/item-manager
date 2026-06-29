@@ -21,8 +21,10 @@ import java.util.List;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import org.mockito.ArgumentCaptor;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -37,16 +39,17 @@ class ItemControllerTest {
     private ItemService itemService;
 
     private ObjectMapper objectMapper;
+    
     private Item item1;
     private Item item2;
 
     @BeforeEach
     void setUp() {
         objectMapper = new ObjectMapper();
-        
+
         item1 = new Item("Apple");
         item1.setId(1L);
-        
+
         item2 = new Item("Banana");
         item2.setId(2L);
     }
@@ -90,6 +93,10 @@ class ItemControllerTest {
         response.andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id", is(10)))
                 .andExpect(jsonPath("$.name", is("Orange")));
+
+        ArgumentCaptor<Item> itemCaptor = ArgumentCaptor.forClass(Item.class);
+        Mockito.verify(itemService).save(itemCaptor.capture());
+        assertThat(itemCaptor.getValue().getName()).isEqualTo(inputItem.getName());
     }
 
     @Test
@@ -104,7 +111,10 @@ class ItemControllerTest {
 
         // Then
         response.andExpect(status().isNoContent());
-        Mockito.verify(itemService, Mockito.times(1)).deleteById(idToDelete);
+
+        ArgumentCaptor<Long> idCaptor = ArgumentCaptor.forClass(Long.class);
+        Mockito.verify(itemService, Mockito.times(1)).deleteById(idCaptor.capture());
+        assertThat(idCaptor.getValue()).isEqualTo(idToDelete);
     }
 
     @Test

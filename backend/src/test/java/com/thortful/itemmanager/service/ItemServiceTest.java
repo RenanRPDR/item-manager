@@ -35,6 +35,7 @@ class ItemServiceTest {
 
     private Item item1;
     private Item item2;
+    private Pageable defaultPageable;
 
     @BeforeEach
     void setUp() {
@@ -43,6 +44,8 @@ class ItemServiceTest {
 
         item2 = new Item("Marble");
         item2.setId(2L);
+        
+        defaultPageable = PageRequest.of(0, 10);
     }
 
     // -------------------------------------------------------------------------
@@ -87,18 +90,17 @@ class ItemServiceTest {
     void searchByName_shouldForwardFragmentAndPageableToRepository() {
         // Given
         String fragment = "stone";
-        Pageable pageable = PageRequest.of(0, 10);
         Page<Item> expectedPage = new PageImpl<>(List.of(item1));
 
-        when(itemRepository.findByNameContainingIgnoreCase(fragment, pageable))
+        when(itemRepository.findByNameContainingIgnoreCase(fragment, defaultPageable))
                 .thenReturn(expectedPage);
 
         // When
-        Page<Item> result = itemService.searchByName(fragment, pageable);
+        Page<Item> result = itemService.searchByName(fragment, defaultPageable);
 
         // Then
         assertThat(result).isEqualTo(expectedPage);
-        verify(itemRepository).findByNameContainingIgnoreCase(fragment, pageable);
+        verify(itemRepository).findByNameContainingIgnoreCase(fragment, defaultPageable);
     }
 
     @Test
@@ -106,14 +108,13 @@ class ItemServiceTest {
     void searchByName_shouldReturnEmptyPageWhenNoMatch() {
         // Given
         String fragment = "zzz";
-        Pageable pageable = PageRequest.of(0, 10);
-        Page<Item> emptyPage = Page.empty(pageable);
+        Page<Item> emptyPage = Page.empty(defaultPageable);
 
-        when(itemRepository.findByNameContainingIgnoreCase(fragment, pageable))
+        when(itemRepository.findByNameContainingIgnoreCase(fragment, defaultPageable))
                 .thenReturn(emptyPage);
 
         // When
-        Page<Item> result = itemService.searchByName(fragment, pageable);
+        Page<Item> result = itemService.searchByName(fragment, defaultPageable);
 
         // Then
         assertThat(result.getContent()).isEmpty();
