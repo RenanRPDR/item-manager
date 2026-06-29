@@ -48,6 +48,6 @@ Starts on `http://localhost:4200`.
 - **Frontend**: Uses Angular Standalone Components.
 
 ## AI Transcripts
-
 Full history of AI usage and decisions is located in:
-[docs/plans/ai-session-log.md](./docs/plans/ai-session-log.md)
+- [docs/complete-ai-session-log.md](./docs/complete-ai-session-log.md)
+- [docs/resume-ai-session-log.md](./docs/resume-ai-session-log.md)
