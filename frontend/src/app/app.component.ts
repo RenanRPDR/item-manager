@@ -1,21 +1,18 @@
 import { Component, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ItemFormComponent } from './components/item-form/item-form.component';
 import { ItemListComponent } from './components/item-list/item-list.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, ItemFormComponent, ItemListComponent],
+  imports: [CommonModule, ItemListComponent],
   template: `
     <div class="app-container">
       <header>
-        <h1>💎 Item Vault</h1>
-        <p>Premium item management dashboard</p>
+        <h1>Item Manager</h1>
       </header>
       
       <main>
-        <app-item-form (itemAdded)="onItemAdded()"></app-item-form>
         <app-item-list #itemList></app-item-list>
       </main>
     </div>
@@ -54,9 +51,4 @@ import { ItemListComponent } from './components/item-list/item-list.component';
   `]
 })
 export class AppComponent {
-  @ViewChild('itemList') itemList!: ItemListComponent;
-
-  onItemAdded() {
-    this.itemList.refresh();
-  }
 }

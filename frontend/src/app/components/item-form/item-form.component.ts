@@ -8,32 +8,26 @@ import { ItemService } from '../../services/item.service';
   standalone: true,
   imports: [CommonModule, FormsModule],
   template: `
-    <div class="glass-panel form-container">
-      <h3>Add New Item</h3>
-      <div class="input-group">
-        <input 
-          type="text" 
-          [(ngModel)]="newItemName" 
-          placeholder="Enter item name..." 
-          (keyup.enter)="createItem()"
-        />
-        <button class="btn btn-primary" (click)="createItem()" [disabled]="!newItemName.trim() || isSubmitting">
-          {{ isSubmitting ? 'Adding...' : 'Add Item' }}
-        </button>
-      </div>
+    <div class="input-group">
+      <input 
+        type="text" 
+        [(ngModel)]="newItemName" 
+        placeholder="Enter new item name..." 
+        (keyup.enter)="createItem()"
+      />
+      <button class="btn btn-primary" (click)="createItem()" [disabled]="!newItemName.trim() || isSubmitting">
+        {{ isSubmitting ? 'Adding...' : '+ Add Item' }}
+      </button>
     </div>
   `,
   styles: [`
-    .form-container {
-      padding: 1.5rem;
-      margin-bottom: 2rem;
-    }
-    h3 { margin-top: 0; margin-bottom: 1rem; color: var(--accent-color); font-weight: 600; }
-    .input-group { display: flex; gap: 1rem; }
-    input { flex: 1; }
+    .input-group { display: flex; gap: 0.5rem; align-items: center; }
+    input { min-width: 220px; }
     
     @media (max-width: 600px) {
-      .input-group { flex-direction: column; }
+      .input-group { flex-direction: column; width: 100%; align-items: stretch; }
+      input { width: 100%; }
+      button { width: 100%; }
     }
   `]
 })

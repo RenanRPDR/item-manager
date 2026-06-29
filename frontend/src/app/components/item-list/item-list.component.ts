@@ -3,24 +3,29 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ItemService } from '../../services/item.service';
 import { Item, PageResponse } from '../../models/item.model';
+import { ItemFormComponent } from '../item-form/item-form.component';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
 @Component({
   selector: 'app-item-list',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, ItemFormComponent],
   template: `
     <div class="glass-panel list-container">
       <div class="list-header">
-        <h3>Items</h3>
-        <input 
-          type="text" 
-          placeholder="Search items..." 
-          [(ngModel)]="searchTerm"
-          (ngModelChange)="onSearchChange($event)"
-          class="search-input"
-        />
+        <div class="search-box">
+          <input 
+            type="text" 
+            placeholder="🔍 Search items by name..." 
+            [(ngModel)]="searchTerm"
+            (ngModelChange)="onSearchChange($event)"
+            class="search-input"
+          />
+        </div>
+        <div class="add-box">
+          <app-item-form (itemAdded)="refresh()"></app-item-form>
+        </div>
       </div>
 
       <div class="table-container">
@@ -56,9 +61,9 @@ import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
   `,
   styles: [`
     .list-container { padding: 1.5rem; }
-    .list-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem; }
-    h3 { margin: 0; color: var(--text-color); font-weight: 600; font-size: 1.25rem; }
-    .search-input { min-width: 250px; }
+    .list-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem; padding-bottom: 1rem; border-bottom: 1px solid var(--glass-border); }
+    .search-box, .add-box { display: flex; align-items: center; }
+    .search-input { min-width: 300px; }
     .table-container { overflow-x: auto; }
     table { width: 100%; border-collapse: collapse; text-align: left; }
     th, td { padding: 1rem; border-bottom: 1px solid var(--glass-border); }
@@ -76,9 +81,10 @@ import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
     .btn[disabled] { opacity: 0.3; cursor: not-allowed; }
     .btn[disabled]:hover { transform: none; background: rgba(255,255,255,0.1); color: var(--text-color); border: none; }
     
-    @media (max-width: 600px) {
+    @media (max-width: 768px) {
       .list-header { flex-direction: column; align-items: stretch; }
-      .search-input { min-width: 100%; }
+      .search-box, .add-box { width: 100%; }
+      .search-input { min-width: 100%; width: 100%; }
       .pagination { flex-direction: column; gap: 1rem; }
     }
   `]
