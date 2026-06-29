@@ -1,7 +1,3 @@
-# ==========================================
-# Unified .gitignore for Spring Boot + Angular
-# ==========================================
-
 # ------------------------------------------
 # General
 # ------------------------------------------
@@ -11,81 +7,30 @@
 Thumbs.db
 
 # ------------------------------------------
-# IDEs and Editors
+# VSCode files
 # ------------------------------------------
-.idea/
-*.iws
-*.iml
-*.ipr
-
 .vscode/*
 !.vscode/settings.json
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
 !.vscode/mcp.json
-
-.project
-.classpath
-.settings/
-.factorypath
-.springBeans
-.sts4-cache
-.apt_generated
-
-*.sublime-workspace
-.c9/
-*.launch
 .history/*
 
 # ------------------------------------------
-# Backend (Spring Boot / Maven / Java)
+# Backend
 # ------------------------------------------
 backend/target/
-*.jar
-*.war
-*.nar
-*.ear
-*.zip
-*.tar.gz
-*.rar
-
-.mvn/wrapper/maven-wrapper.jar
-!**/src/main/**/target/
-!**/src/test/**/target/
-
-# JVM Crash Logs
-hs_err_pid*
-replay_pid*
-
-# Mobile Tools for Java (J2ME)
-.mtj.tmp/
-
-# NetBeans
-nbproject/private/
-nbbuild/
-nbdist/
-.nb-gradle/
 
 # ------------------------------------------
-# Frontend (Angular / Node)
+# Frontend
 # ------------------------------------------
 frontend/node_modules/
 frontend/dist/
-frontend/tmp/
 frontend/out-tsc/
-frontend/bazel-out/
 frontend/.angular/
 frontend/coverage/
-frontend/__screenshots__/
 
 # Node logs
 npm-debug.log
 yarn-error.log
-
-# Miscellaneous Node/Angular
-.sass-cache/
-connect.lock
-libpeerconnection.log
-testem.log
-frontend/typings/
