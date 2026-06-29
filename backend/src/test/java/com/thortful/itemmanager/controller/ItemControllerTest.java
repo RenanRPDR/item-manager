@@ -1,5 +1,7 @@
 package com.thortful.itemmanager.controller;
 
+import java.util.UUID;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
@@ -48,10 +50,10 @@ class ItemControllerTest {
         objectMapper = new ObjectMapper();
 
         item1 = new Item("Apple");
-        item1.setId(1L);
+        item1.setId(UUID.randomUUID());
 
         item2 = new Item("Banana");
-        item2.setId(2L);
+        item2.setId(UUID.randomUUID());
     }
 
     @Test
@@ -81,7 +83,7 @@ class ItemControllerTest {
         // Given
         Item inputItem = new Item("Orange");
         Item savedItem = new Item("Orange");
-        savedItem.setId(10L);
+        savedItem.setId(UUID.randomUUID());
         Mockito.when(itemService.save(any(Item.class))).thenReturn(savedItem);
 
         // When
@@ -91,7 +93,7 @@ class ItemControllerTest {
 
         // Then
         response.andExpect(status().isCreated())
-                .andExpect(jsonPath("$.id", is(10)))
+                .andExpect(jsonPath("$.id", is(savedItem.getId().toString())))
                 .andExpect(jsonPath("$.name", is("Orange")));
 
         ArgumentCaptor<Item> itemCaptor = ArgumentCaptor.forClass(Item.class);
@@ -103,7 +105,7 @@ class ItemControllerTest {
     @DisplayName("DELETE /api/items/{id} should delete item and return 204 No Content")
     void deleteItem_shouldReturn204() throws Exception {
         // Given
-        Long idToDelete = 1L;
+        UUID idToDelete = UUID.randomUUID();
         Mockito.doNothing().when(itemService).deleteById(idToDelete);
 
         // When
@@ -112,7 +114,7 @@ class ItemControllerTest {
         // Then
         response.andExpect(status().isNoContent());
 
-        ArgumentCaptor<Long> idCaptor = ArgumentCaptor.forClass(Long.class);
+        ArgumentCaptor<UUID> idCaptor = ArgumentCaptor.forClass(UUID.class);
         Mockito.verify(itemService, Mockito.times(1)).deleteById(idCaptor.capture());
         assertThat(idCaptor.getValue()).isEqualTo(idToDelete);
     }
@@ -121,7 +123,7 @@ class ItemControllerTest {
     @DisplayName("DELETE /api/items/{id} should return 404 when item does not exist")
     void deleteItem_shouldReturn404WhenItemNotFound() throws Exception {
         // Given
-        Long idToDelete = 99L;
+        UUID idToDelete = UUID.randomUUID();
         Mockito.doThrow(new ResponseStatusException(HttpStatus.NOT_FOUND)).when(itemService).deleteById(idToDelete);
 
         // When

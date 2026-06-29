@@ -1,5 +1,7 @@
 package com.thortful.itemmanager.controller;
 
+import java.util.UUID;
+
 import com.thortful.itemmanager.model.Item;
 import com.thortful.itemmanager.service.ItemService;
 import org.springframework.data.domain.Page;
@@ -52,7 +54,7 @@ public class ItemController {
     @ApiResponse(responseCode = "404", description = "Item not found")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteItem(
-            @Parameter(description = "ID of the item to be deleted") @PathVariable Long id) {
+            @Parameter(description = "ID of the item to be deleted") @PathVariable UUID id) {
         itemService.deleteById(id);
         return ResponseEntity.noContent().build();
     }

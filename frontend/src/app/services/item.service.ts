@@ -27,7 +27,7 @@ export class ItemService {
     return this.http.post<Item>(this.apiUrl, item);
   }
 
-  deleteItem(id: number): Observable<void> {
+  deleteItem(id: string): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
 }

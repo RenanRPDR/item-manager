@@ -127,7 +127,7 @@ export class ItemListComponent implements OnInit {
     this.searchSubject.next(term);
   }
 
-  deleteItem(id: number) {
+  deleteItem(id: string) {
     if(confirm('Are you sure you want to delete this item?')) {
       this.itemService.deleteItem(id).subscribe(() => {
         if (this.pageData?.content.length === 1 && this.currentPage > 0) {

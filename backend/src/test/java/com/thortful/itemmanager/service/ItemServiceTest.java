@@ -1,5 +1,7 @@
 package com.thortful.itemmanager.service;
 
+import java.util.UUID;
+
 import org.springframework.web.server.ResponseStatusException;
 import com.thortful.itemmanager.model.Item;
 import com.thortful.itemmanager.repository.ItemRepository;
@@ -40,10 +42,10 @@ class ItemServiceTest {
     @BeforeEach
     void setUp() {
         item1 = new Item("Granite");
-        item1.setId(1L);
+        item1.setId(UUID.randomUUID());
 
         item2 = new Item("Marble");
-        item2.setId(2L);
+        item2.setId(UUID.randomUUID());
         
         defaultPageable = PageRequest.of(0, 10);
     }
@@ -155,7 +157,7 @@ class ItemServiceTest {
         Item result = itemService.save(input);
 
         // Then
-        assertThat(result.getId()).isEqualTo(1L);
+        assertThat(result.getId()).isEqualTo(item1.getId());
         assertThat(result.getName()).isEqualTo("Granite"); // item1's name
         verify(itemRepository).save(input);
     }
@@ -181,7 +183,7 @@ class ItemServiceTest {
     @DisplayName("deleteById removes the item when it exists")
     void deleteById_shouldDeleteItemWhenItExists() {
         // Given
-        Long id = 1L;
+        UUID id = UUID.randomUUID();
         when(itemRepository.existsById(id)).thenReturn(true);
 
         // When
@@ -196,7 +198,7 @@ class ItemServiceTest {
     @DisplayName("deleteById calls deleteById on the repository exactly once")
     void deleteById_shouldCallRepositoryDeleteByIdOnce() {
         // Given
-        Long id = 5L;
+        UUID id = UUID.randomUUID();
         when(itemRepository.existsById(id)).thenReturn(true);
 
         // When
@@ -210,7 +212,7 @@ class ItemServiceTest {
     @DisplayName("deleteById throws ResponseStatusException when the item does not exist")
     void deleteById_shouldThrowResponseStatusExceptionWhenItemDoesNotExist() {
         // Given
-        Long nonExistentId = 999L;
+        UUID nonExistentId = UUID.randomUUID();
         when(itemRepository.existsById(nonExistentId)).thenReturn(false);
 
         // When & Then
@@ -223,7 +225,7 @@ class ItemServiceTest {
     @DisplayName("deleteById never calls repository delete when the item does not exist")
     void deleteById_shouldNeverCallDeleteWhenItemDoesNotExist() {
         // Given
-        Long nonExistentId = 999L;
+        UUID nonExistentId = UUID.randomUUID();
         when(itemRepository.existsById(nonExistentId)).thenReturn(false);
 
         // When & Then
