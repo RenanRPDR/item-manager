@@ -4,8 +4,8 @@
 
 ### Backend (Spring Boot)
 ```bash
-./mvnw clean install
-./mvnw spring-boot:run
+mvn clean install
+mvn spring-boot:run
 ```
 Starts on `http://localhost:8080`.
 
